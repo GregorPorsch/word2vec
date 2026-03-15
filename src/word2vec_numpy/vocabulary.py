@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 from collections import Counter
-from typing import Iterable
+from collections.abc import Iterable
 
 
 class Vocabulary:
@@ -47,7 +47,7 @@ class Vocabulary:
         cls,
         sentences: Iterable[list[str]],
         min_count: int = 1,
-    ) -> "Vocabulary":
+    ) -> Vocabulary:
         """Build vocabulary from tokenised sentences.
 
         Args:
