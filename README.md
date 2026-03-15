@@ -39,6 +39,9 @@ Building word2vec from scratch is valuable because:
 ```
 word2vec-numpy/
 ├── pyproject.toml                  # Project config, dependencies, CLI entry point
+├── Makefile                        # Common task automation (test, lint, train, …)
+├── .devcontainer/
+│   └── devcontainer.json           # VS Code / GitHub Codespaces dev container
 ├── data/
 │   └── tiny_shakespeare.txt        # Bundled public-domain corpus (~5 KB)
 ├── docs/
@@ -76,11 +79,37 @@ Requires Python ≥ 3.11 and [uv](https://docs.astral.sh/uv/).
 git clone <repo-url> && cd word2vec-numpy
 
 # Install dependencies
-uv sync
+make install
 
 # Verify
-uv run pytest tests/ -v
+make check
 ```
+
+### Dev Container (VS Code / GitHub Codespaces)
+
+The repository includes a [dev container](.devcontainer/devcontainer.json) configuration. Open the project in VS Code and select **"Reopen in Container"** (or launch a Codespace on GitHub) — dependencies are installed automatically via `uv sync` on container creation.
+
+The container includes:
+- Python 3.12
+- `uv` (pre-installed via the Astral feature)
+- VS Code extensions: Ruff, Python
+
+---
+
+## Makefile Targets
+
+All common tasks are automated via `make`:
+
+| Target | Description |
+|--------|-------------|
+| `make help` | Show all available targets |
+| `make install` | Install all dependencies (`uv sync`) |
+| `make test` | Run the full test suite |
+| `make lint` | Run ruff linter |
+| `make format` | Auto-format code with ruff |
+| `make check` | Run lint + tests (CI-style) |
+| `make train` | Train on bundled corpus with default hyperparameters |
+| `make clean` | Remove build artifacts, caches, and outputs |
 
 ---
 
@@ -175,7 +204,7 @@ See **[`docs/experimental_notes.md`](docs/experimental_notes.md)** for observati
 ## Tests
 
 ```bash
-uv run pytest tests/ -v
+make test
 ```
 
 The test suite (37 tests) covers:
@@ -195,7 +224,7 @@ The **gradient check** is the most important correctness test — it verifies th
 ## Lint
 
 ```bash
-uv run ruff check src/ tests/
+make lint
 ```
 
 ---
