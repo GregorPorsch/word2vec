@@ -16,6 +16,8 @@ This document provides a complete mathematical derivation of the skip-gram model
 | $\mathbf{u}_c$ | Output embedding of context word $c$ | $D$ | `model.W_out[context_id]` |
 | $\mathbf{u}_k$ | Output embedding of negative sample $k$ | $D$ | `model.W_out[neg_ids[k]]` |
 | $K$ | Number of negative samples | scalar | `config.num_negatives` |
+| $T$ | Total number of words in the corpus | scalar | `sum(len(s) for s in sentences)` |
+| $\theta$ | All trainable parameters, i.e. $\theta = (\mathbf{W}_{\text{in}},\, \mathbf{W}_{\text{out}})$ | — | `model.W_in`, `model.W_out` |
 | $\eta$ | Learning rate | scalar | `lr` in `train_step` |
 | $\sigma(\cdot)$ | Sigmoid function | — | `losses.sigmoid()` |
 
@@ -25,7 +27,7 @@ This document provides a complete mathematical derivation of the skip-gram model
 
 ### 2.1. Core Idea
 
-Given a corpus of words $w_1, w_2, \ldots, w_T$, skip-gram maximises the probability of observing actual context words given a center word. For each center word $w_t$ and context word $w_c$ within a window of size $m$:
+Given a corpus of words $w_1, w_2, \ldots, w_T$ (where $T$ is the total number of tokens in the corpus), skip-gram maximises the probability of observing actual context words given a center word. The model parameters $\theta = (\mathbf{W}_{\text{in}},\, \mathbf{W}_{\text{out}})$ comprise both embedding matrices — these are the only trainable parameters. For each center word $w_t$ and context word $w_c$ within a window of size $m$:
 
 $$
 \max_{\theta} \sum_{t=1}^{T} \sum_{\substack{c \in \text{window}(t) \\ c \neq t}} \log P(w_c \mid w_t; \theta)
