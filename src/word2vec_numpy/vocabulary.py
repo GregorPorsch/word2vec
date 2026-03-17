@@ -1,3 +1,4 @@
+# src/word2vec_numpy/vocabulary.py
 """Vocabulary construction and frequency-based subsampling."""
 
 from __future__ import annotations
@@ -80,13 +81,12 @@ class Vocabulary:
     def compute_discard_probs(self, threshold: float) -> None:
         """Precompute per-word discard probabilities.
 
-        Following Mikolov et al. (2013), the probability of *keeping* a
-        word w_i with frequency f(w_i) is::
+        The probability of keeping a word w_i with frequency f(w_i) is:
 
             P_keep(w_i) = sqrt(t / f(w_i))  +  t / f(w_i)
 
         where *t* is the threshold.  Equivalently, the probability of
-        *discarding* the word is ``1 - P_keep``.
+        *discarding* the word is 1 - P_keep.
 
         High-frequency words (articles, prepositions) are discarded more
         often, speeding up training and improving the quality of the

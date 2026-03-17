@@ -1,3 +1,4 @@
+# src/word2vec_numpy/config.py
 """Hyperparameter configuration for word2vec training."""
 
 from dataclasses import dataclass
@@ -17,8 +18,8 @@ class TrainConfig:
         min_learning_rate: Floor for learning rate during linear decay.
         epochs: Number of full passes over the training corpus.
         min_count: Minimum word frequency to be included in vocabulary.
-        subsample_threshold: Threshold for frequent-word subsampling
-            (Mikolov et al., 2013). Set to 0.0 to disable.
+        subsample_threshold: Threshold for frequent-word subsampling.
+            Set to 0.0 to disable.
         seed: Random seed for reproducibility.
         batch_log_interval: Print loss every N training pairs.
     """

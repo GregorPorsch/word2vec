@@ -1,3 +1,4 @@
+# tests/test_training.py
 """Tests for the training loop: loss decreases and end-to-end smoke test."""
 
 import numpy as np
@@ -78,9 +79,7 @@ class TestLossDecreases:
         epoch_losses = history["epoch_losses"]
         assert len(epoch_losses) == 5
         # Epoch 5 loss should be lower than epoch 1.
-        assert epoch_losses[-1] < epoch_losses[0], (
-            f"Epoch losses did not decrease: {epoch_losses}"
-        )
+        assert epoch_losses[-1] < epoch_losses[0], f"Epoch losses did not decrease: {epoch_losses}"
 
 
 class TestEndToEnd:

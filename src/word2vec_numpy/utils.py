@@ -1,3 +1,4 @@
+# src/word2vec_numpy/utils.py
 """Utility helpers: seeding, similarity, I/O."""
 
 from __future__ import annotations
@@ -13,15 +14,15 @@ from word2vec_numpy.vocabulary import Vocabulary
 def set_seed(seed: int) -> np.random.Generator:
     """Create a seeded NumPy random generator and set the legacy seed.
 
-    We also set ``np.random.seed`` for any library code that might use
+    We also set np.random.seed for any library code that might use
     the legacy API, but all internal code should use the returned
-    ``Generator`` directly.
+    Generator directly.
 
     Args:
         seed: Integer seed.
 
     Returns:
-        A ``numpy.random.Generator`` instance.
+        A numpy.random.Generator instance.
     """
     np.random.seed(seed)
     return np.random.default_rng(seed)
@@ -46,8 +47,8 @@ def save_embeddings(
 ) -> None:
     """Save embeddings in a simple text format (word2vec `.txt` style).
 
-    Format: first line is ``V D``, then one line per word:
-    ``word val_1 val_2 ... val_D``.
+    Format: first line is V D, then one line per word:
+    word val_1 val_2 ... val_D.
 
     Args:
         model: Trained model.
@@ -74,7 +75,7 @@ def load_embeddings(path: str | Path) -> tuple[dict[str, np.ndarray], int]:
         path: Path to the embeddings file.
 
     Returns:
-        A tuple of ``(word_to_vector_dict, embedding_dim)``.
+        A tuple of (word_to_vector_dict, embedding_dim).
     """
     word_vectors: dict[str, np.ndarray] = {}
     embedding_dim = 0

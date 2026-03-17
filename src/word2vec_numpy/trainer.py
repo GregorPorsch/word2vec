@@ -1,3 +1,4 @@
+# srd/word2vec_numpy/trainer.py
 """Training loop for skip-gram with negative sampling."""
 
 from __future__ import annotations
@@ -28,7 +29,7 @@ class Trainer:
         config: Training hyperparameters.
         vocab: Vocabulary instance.
         sampler: Negative sampler.
-        history: Dict with ``"epoch_losses"`` list (mean loss per epoch).
+        history: Dict with "epoch_losses" list (mean loss per epoch).
     """
 
     def __init__(
@@ -57,8 +58,8 @@ class Trainer:
         1. Re-generate training pairs (fresh subsampling & window draws).
         2. Shuffle pairs.
         3. Iterate over pairs with SGD updates.
-        4. Linearly decay learning rate from ``config.learning_rate``
-           towards ``config.min_learning_rate``.
+        4. Linearly decay learning rate from config.learning_rate
+           towards config.min_learning_rate.
 
         Args:
             sentences: Tokenised corpus (list of token lists).
@@ -72,7 +73,10 @@ class Trainer:
         # We estimate by generating pairs once, then assume similar count
         # each epoch.
         sample_pairs = generate_training_pairs(
-            sentences, self.vocab, cfg.window_size, self.rng,
+            sentences,
+            self.vocab,
+            cfg.window_size,
+            self.rng,
         )
         estimated_total_steps = len(sample_pairs) * cfg.epochs
         global_step = 0
@@ -92,7 +96,10 @@ class Trainer:
             # Re-generate pairs each epoch for variety (subsampling is
             # stochastic, and window sizes are re-drawn).
             pairs = generate_training_pairs(
-                sentences, self.vocab, cfg.window_size, self.rng,
+                sentences,
+                self.vocab,
+                cfg.window_size,
+                self.rng,
             )
             # Shuffle training pairs.
             indices = self.rng.permutation(len(pairs))
@@ -111,7 +118,9 @@ class Trainer:
 
                 # Draw negative samples (excluding the true context word).
                 neg_ids = self.sampler.sample(
-                    cfg.num_negatives, exclude=context_id, rng=self.rng,
+                    cfg.num_negatives,
+                    exclude=context_id,
+                    rng=self.rng,
                 )
 
                 # Forward + backward + update.

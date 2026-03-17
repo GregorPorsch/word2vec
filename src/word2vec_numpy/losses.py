@@ -1,3 +1,4 @@
+# src/word2vec_numpy/losses.py
 """Numerically stable loss primitives for skip-gram with negative sampling."""
 
 from __future__ import annotations
@@ -8,13 +9,13 @@ import numpy as np
 def sigmoid(x: np.ndarray) -> np.ndarray:
     """Element-wise sigmoid with numerical stability.
 
-    Uses the identity ``sigmoid(x) = 1 / (1 + exp(-x))`` rearranged to
-    avoid overflow for large negative *x*:
+    Uses the identity sigmoid(x) = 1 / (1 + exp(-x)) rearranged to
+    avoid overflow for large negative x:
 
-    - When x ≥ 0:  σ(x) = 1 / (1 + exp(−x))
+    - When x >= 0:  σ(x) = 1 / (1 + exp(-x))
     - When x < 0:  σ(x) = exp(x) / (1 + exp(x))
 
-    This avoids computing ``exp(large_positive)`` which would overflow.
+    This avoids computing exp(large_positive) which would overflow.
     """
     pos_mask = x >= 0
     neg_mask = ~pos_mask
@@ -41,18 +42,17 @@ def sgns_loss(
     The loss is the negative-log-likelihood of the binary classification
     objective::
 
-        L = −log σ(v'_c · v_w) − Σ_{k} log σ(−v'_k · v_w)
+        L = -log σ(u_c · v_w) - Σ_i log σ(-u_k_i · v_w)
 
-    where ``v_w`` is the center (input) embedding, ``v'_c`` is the true
-    context (output) embedding, and ``v'_k`` are the negative-sample
+    where v_w is the center (input) embedding, u_c is the true
+    context (output) embedding, and u_k_i are the negative-sample
     output embeddings.
 
-    We clip internal log arguments to ``[1e-10, 1]`` to avoid ``log(0)``.
+    We clip internal log arguments to [1e-10, 1] to avoid log(0).
 
     Args:
         dot_positive: Scalar dot product for the positive pair.
-        dot_negatives: Array of dot products for negative samples, shape
-            ``(K,)``.
+        dot_negatives: Array of dot products for negative samples.
 
     Returns:
         Scalar loss value.

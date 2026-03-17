@@ -1,3 +1,4 @@
+# tests/test_model.py
 """Tests for the SkipGramModel: shapes, loss, and finite-difference gradient check."""
 
 import numpy as np
@@ -20,7 +21,7 @@ class TestSigmoid:
         assert abs(result) < 1e-10
 
     def test_symmetry(self):
-        """σ(x) + σ(−x) = 1."""
+        """σ(x) + σ(-x) = 1."""
         x = np.array([0.5, -1.3, 2.7])
         assert np.allclose(sigmoid(x) + sigmoid(-x), 1.0)
 
@@ -52,7 +53,7 @@ class TestFiniteDifferenceGradientCheck:
 
     This is the most important correctness test in the project.
     We use a tiny model (V=4, D=3) and perturb each parameter by ε,
-    computing (L(θ+ε) − L(θ−ε)) / (2ε) and comparing against the
+    computing (L(θ+ε) - L(θ−ε)) / (2ε) and comparing against the
     analytic gradient.  A relative error < 1e-5 for each parameter
     is expected.
     """
@@ -76,7 +77,7 @@ class TestFiniteDifferenceGradientCheck:
         model, center_id, context_id, neg_ids = setup
         eps = 1e-5
 
-        # --- Compute analytic gradient by doing a train step at lr=0 ------
+        # Compute analytic gradient by doing a train step at lr=0
         # We extract the gradient indirectly: run train_step with lr=1
         # and the gradient is  -(W_after - W_before).
         W_in_before = model.W_in[center_id].copy()
@@ -168,6 +169,5 @@ class TestFiniteDifferenceGradientCheck:
                 np.maximum(np.abs(analytic_grad), np.abs(numerical_grad)) + 1e-12
             )
             assert np.all(rel_error < 1e-4), (
-                f"W_out neg[{neg_idx_pos}] grad check failed: "
-                f"max rel error = {rel_error.max()}"
+                f"W_out neg[{neg_idx_pos}] grad check failed: max rel error = {rel_error.max()}"
             )

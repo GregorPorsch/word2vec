@@ -1,3 +1,4 @@
+# tests/test_vocabulary.py
 """Tests for vocabulary construction and subsampling."""
 
 from word2vec_numpy.vocabulary import Vocabulary
@@ -19,7 +20,7 @@ class TestVocabularyConstruction:
 
         assert "the" in vocab
         assert "cat" in vocab
-        # "sat" and "slept" appear only once — should be filtered.
+        # "sat" and "slept" appear only once - should be filtered.
         assert "sat" not in vocab
         assert "slept" not in vocab
         assert vocab.size == 2
@@ -44,7 +45,7 @@ class TestVocabularyConstruction:
         vocab = Vocabulary.build_from_corpus(sentences, min_count=1)
 
         encoded = vocab.encode_sentence(["a", "c", "oov"])
-        # "oov" is out of vocabulary — should be dropped.
+        # "oov" is out of vocabulary - should be dropped.
         assert len(encoded) == 2
         assert encoded[0] == vocab.word2idx["a"]
         assert encoded[1] == vocab.word2idx["c"]
@@ -64,7 +65,7 @@ class TestSubsampling:
         vocab = Vocabulary.build_from_corpus(sentences, min_count=1)
         vocab.compute_discard_probs(threshold=1e-3)
 
-        # "a" is very frequent — should have higher discard prob than "c".
+        # "a" is very frequent - should have higher discard prob than "c".
         prob_a = vocab.discard_probs[vocab.word2idx["a"]]
         prob_c = vocab.discard_probs[vocab.word2idx["c"]]
         assert prob_a >= prob_c

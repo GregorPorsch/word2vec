@@ -1,3 +1,4 @@
+# src/word2vec_numpy/evaluation.py
 """Evaluation utilities: nearest-neighbour queries and analogy tests."""
 
 from __future__ import annotations
@@ -9,7 +10,7 @@ from word2vec_numpy.vocabulary import Vocabulary
 
 
 def _normalised_embeddings(model: SkipGramModel) -> np.ndarray:
-    """Return L2-normalised embedding matrix, shape ``(V, D)``."""
+    """Return L2-normalised embedding matrix, shape (V, D)."""
     emb = model.get_all_embeddings()
     norms = np.linalg.norm(emb, axis=1, keepdims=True)
     # Avoid division by zero for any zero-norm rows.
@@ -23,7 +24,7 @@ def most_similar(
     vocab: Vocabulary,
     top_k: int = 10,
 ) -> list[tuple[str, float]]:
-    """Find the *top_k* nearest neighbours of *word* by cosine similarity.
+    """Find the top_k nearest neighbours of word by cosine similarity.
 
     Args:
         word: Query word.
@@ -32,7 +33,7 @@ def most_similar(
         top_k: Number of neighbours to return.
 
     Returns:
-        List of ``(neighbour_word, cosine_similarity)`` tuples sorted
+        List of (neighbour_word, cosine_similarity) tuples sorted
         by descending similarity.  The query word itself is excluded.
     """
     if word not in vocab:
@@ -40,8 +41,8 @@ def most_similar(
 
     normed = _normalised_embeddings(model)
     word_id = vocab.word2idx[word]
-    query = normed[word_id]                          # (D,)
-    similarities = normed @ query                    # (V,)
+    query = normed[word_id]  # (D,)
+    similarities = normed @ query  # (V,)
 
     # Exclude the query word itself.
     similarities[word_id] = -np.inf
@@ -58,11 +59,11 @@ def analogy(
     vocab: Vocabulary,
     top_k: int = 5,
 ) -> list[tuple[str, float]]:
-    """Solve the analogy *a* is to *b* as *c* is to *?*.
+    """Solve the analogy a is to b as c is to ?.
 
     Uses the classic vector-arithmetic approach::
 
-        d ≈ b − a + c
+        d ≈ b - a + c
 
     Args:
         a, b, c: Words defining the analogy.
@@ -71,18 +72,14 @@ def analogy(
         top_k: Number of candidates to return.
 
     Returns:
-        List of ``(word, cosine_similarity)`` tuples.
+        List of (word, cosine_similarity) tuples.
     """
     for w in (a, b, c):
         if w not in vocab:
             return []
 
     normed = _normalised_embeddings(model)
-    vec = (
-        normed[vocab.word2idx[b]]
-        - normed[vocab.word2idx[a]]
-        + normed[vocab.word2idx[c]]
-    )
+    vec = normed[vocab.word2idx[b]] - normed[vocab.word2idx[a]] + normed[vocab.word2idx[c]]
     # Normalise the query vector.
     vec_norm = np.linalg.norm(vec)
     if vec_norm > 0:
@@ -108,13 +105,13 @@ def print_evaluation_report(
     Args:
         model: Trained model.
         vocab: Vocabulary.
-        query_words: Words to query.  If ``None``, picks the 8 most
+        query_words: Words to query.  If None, picks the 8 most
             frequent words automatically.
         top_k: Neighbours per query.
     """
     if query_words is None:
         # Pick some of the most frequent words (skip the very top which
-        # are likely stop-words — take indices 2..10 if available).
+        # are likely stop-words - take indices 2..10 if available).
         start = min(2, vocab.size)
         end = min(start + 8, vocab.size)
         query_words = [vocab.idx2word[i] for i in range(start, end)]
@@ -125,7 +122,7 @@ def print_evaluation_report(
 
     for word in query_words:
         if word not in vocab:
-            print(f"\n  '{word}' not in vocabulary — skipping.")
+            print(f"\n  '{word}' not in vocabulary - skipping.")
             continue
         neighbours = most_similar(word, model, vocab, top_k=top_k)
         print(f"\n  {word}:")

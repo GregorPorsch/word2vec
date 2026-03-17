@@ -1,3 +1,4 @@
+# src/word2vec_numpy/preprocessing.py
 """Text preprocessing: cleaning, tokenisation, and corpus loading."""
 
 from __future__ import annotations
@@ -12,7 +13,7 @@ _DEFAULT_CORPUS = Path(__file__).resolve().parents[2] / "data" / "tiny_shakespea
 def clean_text(text: str) -> str:
     """Lowercase, strip non-alphabetic characters, and normalise whitespace.
 
-    We deliberately keep the preprocessing simple — for a small research
+    We deliberately keep the preprocessing simple - for a small research
     corpus, aggressive cleaning is counterproductive. Keeping only ASCII
     letters and spaces yields a clean token stream without exotic edge cases.
     """
@@ -32,7 +33,7 @@ def load_corpus(path: str | Path | None = None) -> list[list[str]]:
     """Load a text file and return a list of tokenised sentences.
 
     Each non-empty line becomes one sentence (list of tokens).
-    If *path* is ``None``, the bundled Shakespeare excerpt is used
+    If path is None, the bundled Shakespeare excerpt is used
     so that the project works out of the box.
 
     Args:

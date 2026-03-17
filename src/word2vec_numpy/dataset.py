@@ -1,3 +1,4 @@
+# src/word2vec_numpy/dataset.py
 """Context-window pair generation for skip-gram training."""
 
 from __future__ import annotations
@@ -16,11 +17,11 @@ def generate_training_pairs(
     """Generate (center, context) training pairs with dynamic windows.
 
     For each center word, the actual window is drawn uniformly from
-    ``[1, window_size]``, following the original word2vec implementation.
+    [1, window_size], following the original word2vec implementation.
     This effectively down-weights more distant context words.
 
     Subsampling is applied: each token is stochastically discarded
-    with probability ``vocab.discard_probs[idx]`` before pair generation.
+    with probability vocab.discard_probs[idx] before pair generation.
 
     Args:
         sentences: Tokenised corpus (list of token lists).
@@ -29,7 +30,7 @@ def generate_training_pairs(
         rng: NumPy random generator for reproducibility.
 
     Returns:
-        A list of ``(center_word_id, context_word_id)`` tuples.
+        A list of (center_word_id, context_word_id) tuples.
     """
     pairs: list[tuple[int, int]] = []
 
@@ -37,19 +38,15 @@ def generate_training_pairs(
         # Map tokens to indices, dropping OOV words.
         word_ids = vocab.encode_sentence(sentence)
 
-        # --- Subsampling: randomly discard frequent words ----------------
-        word_ids = [
-            idx
-            for idx in word_ids
-            if rng.random() >= vocab.discard_probs[idx]
-        ]
+        # Subsampling: randomly discard frequent words
+        word_ids = [idx for idx in word_ids if rng.random() >= vocab.discard_probs[idx]]
 
         if len(word_ids) < 2:
             continue
 
-        # --- Generate pairs with a dynamic (reduced) window --------------
+        # Generate pairs with a dynamic (reduced) window
         for i, center_id in enumerate(word_ids):
-            # Sample a reduced window size ∈ [1, window_size].
+            # Sample a reduced window size in [1, window_size].
             actual_window = rng.integers(1, window_size + 1)
 
             start = max(0, i - actual_window)
