@@ -17,7 +17,7 @@ This document provides a complete mathematical derivation of the skip-gram model
 | $\mathbf{u}_k$ | Output embedding of negative sample $k$ | $D$ | `model.W_out[neg_ids[k]]` |
 | $K$ | Number of negative samples | scalar | `config.num_negatives` |
 | $T$ | Total number of words in the corpus | scalar | `sum(len(s) for s in sentences)` |
-| $\theta$ | All trainable parameters, i.e. $\theta = (\mathbf{W}_{\text{in}},\, \mathbf{W}_{\text{out}})$ | — | `model.W_in`, `model.W_out` |
+| $\theta$ | All trainable parameters, i.e. $\theta = (\mathbf{W}_{\mathrm{in}}, \mathbf{W}_{\mathrm{out}})$ | — | `model.W_in`, `model.W_out` |
 | $\eta$ | Learning rate | scalar | `lr` in `train_step` |
 | $\sigma(\cdot)$ | Sigmoid function | — | `losses.sigmoid()` |
 
@@ -27,7 +27,11 @@ This document provides a complete mathematical derivation of the skip-gram model
 
 ### 2.1. Core Idea
 
-Given a corpus of words $w_1, w_2, \ldots, w_T$, skip-gram maximises the probability of observing actual context words given a center word. The model parameters $\theta = (\mathbf{W}_{in}, \mathbf{W}_{out})$ comprise both embedding matrices - these are the only trainable parameters. For each center word $w_t$ and context word $w_c$ within a window of size $m$:
+Given a corpus of words $w_1, w_2, \ldots, w_T$, skip-gram maximises the probability of observing actual context words given a center word. The model parameters 
+$$
+\theta = (\mathbf{W}_{in}, \mathbf{W}_{out})
+$$ 
+comprise both embedding matrices - these are the only trainable parameters. For each center word $w_t$ and context word $w_c$ within a window of size $m$:
 
 $$
 \max_{\theta} \sum_{t=1}^{T} \sum_{\substack{c \in \text{window}(t) \\ c \neq t}} \log P(w_c \mid w_t; \theta)
@@ -152,7 +156,14 @@ $$
 \frac{\partial}{\partial \mathbf{v}_w} \left[-\log \sigma(\mathbf{u}_c^\top \mathbf{v}_w)\right] = -(1 - \sigma(\mathbf{u}_c^\top \mathbf{v}_w)) \cdot \mathbf{u}_c
 $$
 
-*Derivation:* Let $z = \mathbf{u}_c^\top \mathbf{v}_w$. By the chain rule, $\frac{\partial}{\partial \mathbf{v}_w}[-\log \sigma(z)] = \frac{d}{dz}[-\log \sigma(z)] \cdot \frac{\partial z}{\partial \mathbf{v}_w}$. We have $\frac{\partial z}{\partial \mathbf{v}_w} = \mathbf{u}_c$ and $\frac{d}{dz}[-\log \sigma(z)] = -(1 - \sigma(z))$ (section 4.1), giving the result above.
+*Derivation:* Let $z = \mathbf{u}_c^\top \mathbf{v}_w$. By the chain rule, $\frac{\partial}{\partial \mathbf{v}_w}[-\log \sigma(z)] = \frac{d}{dz}[-\log \sigma(z)] \cdot \frac{\partial z}{\partial \mathbf{v}_w}$. We have
+$
+\frac{\partial z}{\partial \mathbf{v}_w} = \mathbf{u}_c
+$
+and
+$
+\frac{d}{dz}\left[-\log \sigma(z)\right] = -(1 - \sigma(z)).
+$
 
 **Negative terms:**
 
@@ -160,7 +171,14 @@ $$
 \frac{\partial}{\partial \mathbf{v}_w} \left[-\log \sigma(-\mathbf{u}_{k_i}^\top \mathbf{v}_w)\right] = \sigma(\mathbf{u}_{k_i}^\top \mathbf{v}_w) \cdot \mathbf{u}_{k_i}
 $$
 
-*Derivation:* Let $z_i = \mathbf{u}_{k_i}^\top \mathbf{v}_w$. By the chain rule, $\frac{\partial}{\partial \mathbf{v}_w}[-\log \sigma(-z_i)] = \frac{d}{dz_i}[-\log \sigma(-z_i)] \cdot \frac{\partial z_i}{\partial \mathbf{v}_w}$. We have $\frac{\partial z_i}{\partial \mathbf{v}_w} = \mathbf{u}_{k_i}$ and $\frac{d}{dz}[-\log \sigma(-z)] = \sigma(z)$ (section 4.1), giving the result above.
+*Derivation:* Let $z_i = \mathbf{u}_{k_i}^\top \mathbf{v}_w$. By the chain rule, $\frac{\partial}{\partial \mathbf{v}_w}[-\log \sigma(-z_i)] = \frac{d}{dz_i}[-\log \sigma(-z_i)] \cdot \frac{\partial z_i}{\partial \mathbf{v}_w}$. We have
+$
+\frac{\partial z_i}{\partial \mathbf{v}_w} = \mathbf{u}_{k_i}
+$
+and
+$
+\frac{d}{dz_i}\left[-\log \sigma(-z_i)\right] = \sigma(z_i).
+$
 
 **Combined:**
 
@@ -168,9 +186,14 @@ $$
 \boxed{\frac{\partial \mathcal{L}}{\partial \mathbf{v}_w} = -(1 - \sigma_c) \, \mathbf{u}_c + \sum_{i=1}^{K} \sigma_{k_i} \, \mathbf{u}_{k_i}}
 $$
 
-where $\sigma_c = \sigma(\mathbf{u}_c^\top \mathbf{v}_w)$
+where
+$$
+\sigma_c = \sigma(\mathbf{u}_c^\top \mathbf{v}_w)
+$$
 and
-$\sigma_{k_i} = \sigma(\mathbf{u}_{k_i}^\top \mathbf{v}_w)$.
+$$
+\sigma_{k_i} = \sigma(\mathbf{u}_{k_i}^\top \mathbf{v}_w).
+$$
 
 **Code:**
 ```python
@@ -205,11 +228,24 @@ $$
 \frac{\partial \mathcal{L}}{\partial \mathbf{u}_{k_i}} = \frac{\partial}{\partial \mathbf{u}_{k_i}} \left[-\log \sigma(-\mathbf{u}_{k_i}^\top \mathbf{v}_w)\right]
 $$
 
-Let $z_i = \mathbf{u}_{k_i}^\top \mathbf{v}_w$. By the chain rule,
-$\frac{\partial}{\partial \mathbf{u}_{k_i}} \left[-\log \sigma(-z_i)\right]
-= \frac{d}{dz_i} \left[-\log \sigma(-z_i)\right] \cdot \frac{\partial z_i}{\partial \mathbf{u}_{k_i}}$.
-We have $\frac{\partial z_i}{\partial \mathbf{u}_{k_i}} = \mathbf{v}_w$ and
-$\frac{d}{dz_i} \left[-\log \sigma(-z_i)\right] = \sigma(z_i)$. (section 4.1).
+Let $z_i = \mathbf{u}_{k_i}^\top \mathbf{v}_w$.
+
+By the chain rule,
+$$
+\frac{\partial}{\partial \mathbf{u}_{k_i}} \left[-\log \sigma(-z_i)\right]
+= \frac{d}{dz_i} \left[-\log \sigma(-z_i)\right] \cdot \frac{\partial z_i}{\partial \mathbf{u}_{k_i}}.
+$$
+
+We have
+$$
+\frac{\partial z_i}{\partial \mathbf{u}_{k_i}} = \mathbf{v}_w
+$$
+and
+$$
+\frac{d}{dz_i} \left[-\log \sigma(-z_i)\right] = \sigma(z_i).
+$$
+
+(Section~4.1)
 
 $$
 \boxed{\frac{\partial \mathcal{L}}{\partial \mathbf{u}_{k_i}} = \sigma_{k_i} \, \mathbf{v}_w}

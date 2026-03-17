@@ -12,7 +12,7 @@ class Vocabulary:
     """Word-to-index mapping with frequency statistics.
 
     The vocabulary is constructed from a tokenised corpus and optionally
-    pruned by a minimum-count threshold.  It also precomputes the discard
+    pruned by a minimum-count threshold. It also precomputes the discard
     probabilities used for Mikolov-style frequent-word subsampling.
 
     Attributes:
@@ -85,8 +85,8 @@ class Vocabulary:
 
             P_keep(w_i) = sqrt(t / f(w_i))  +  t / f(w_i)
 
-        where *t* is the threshold.  Equivalently, the probability of
-        *discarding* the word is 1 - P_keep.
+        where t is the threshold. Equivalently, the probability of
+        discarding the word is 1 - P_keep.
 
         High-frequency words (articles, prepositions) are discarded more
         often, speeding up training and improving the quality of the
@@ -94,7 +94,7 @@ class Vocabulary:
 
         Args:
             threshold: Subsampling threshold.  Reasonable values are
-                around 1e-3 to 1e-5.  Set to 0 to disable.
+                around 1e-3 to 1e-5. Set to 0 to disable.
         """
         if threshold <= 0.0:
             self.discard_probs = [0.0] * len(self.idx2word)

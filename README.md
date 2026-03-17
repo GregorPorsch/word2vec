@@ -1,26 +1,15 @@
-# word2vec-numpy
+# word2vec
 
-A clean, from-scratch implementation of **skip-gram word2vec with negative sampling** in pure NumPy.
-
-Built as a compact ML systems project demonstrating mathematical rigour, code quality, and reproducible experiments — without any deep learning frameworks.
-
----
-
-## Motivation
-
-Word2vec introduced the idea that simple self-supervised objectives can learn rich word representations from raw text. This implementation strips the algorithm down to its mathematical core: two embedding matrices, a binary classification loss, and stochastic gradient descent — all visible and inspectable in ~500 lines of NumPy.
-
-Building word2vec from scratch is valuable because:
-- The gradient derivation is tractable enough to verify by hand.
-- The same core concepts (representation learning, noise-contrastive objectives, SGD) appear in modern Transformer-based models.
-- It develops intuition for optimisation, loss landscapes, and embedding geometry.
+A from-scratch implementation of **skip-gram word2vec with negative sampling** in pure NumPy.
+This implementation strips the algorithm down to its mathematical core: two embedding matrices, a binary classification loss, and stochastic gradient descent.
 
 ---
+
 
 ## Features
 
 - **Skip-gram** architecture with **negative sampling** (SGNS)
-- Pure NumPy — no PyTorch, TensorFlow, or JAX
+- Pure NumPy - no PyTorch, TensorFlow, or JAX
 - Explicit, hand-derived gradient computation
 - Numerically stable sigmoid and loss
 - Xavier embedding initialisation
@@ -37,7 +26,7 @@ Building word2vec from scratch is valuable because:
 ## Repository Structure
 
 ```
-word2vec-numpy/
+word2vec/
 ├── pyproject.toml                  # Project config, dependencies, CLI entry point
 ├── Makefile                        # Common task automation (test, lint, train, …)
 ├── .devcontainer/
@@ -46,7 +35,6 @@ word2vec-numpy/
 │   └── tiny_shakespeare.txt        # Bundled public-domain corpus (~5 KB)
 ├── docs/
 │   ├── mathematical_core.md        # Full SGNS derivation with code cross-references
-│   └── experimental_notes.md       # Hyperparameter effects, limitations, context
 ├── src/word2vec_numpy/
 │   ├── __init__.py
 │   ├── config.py                   # TrainConfig dataclass
@@ -72,11 +60,22 @@ word2vec-numpy/
 
 ## Setup
 
+### Dev Container (VS Code / GitHub Codespaces)
+
+The repository includes a [dev container](.devcontainer/devcontainer.json) configuration. Open the project in VS Code and select **"Reopen in Container"** (or launch a Codespace on GitHub) - dependencies are installed automatically via `uv sync` on container creation.
+
+The container includes:
+- Python 3.12
+- `uv` (pre-installed via the Astral feature)
+- VS Code extensions: Ruff, Python
+
+### Local Setup
+
 Requires Python ≥ 3.11 and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 # Clone and enter the repository
-git clone <repo-url> && cd word2vec-numpy
+git clone <repo-url> && cd word2vec
 
 # Install dependencies
 make install
@@ -84,15 +83,6 @@ make install
 # Verify
 make check
 ```
-
-### Dev Container (VS Code / GitHub Codespaces)
-
-The repository includes a [dev container](.devcontainer/devcontainer.json) configuration. Open the project in VS Code and select **"Reopen in Container"** (or launch a Codespace on GitHub) — dependencies are installed automatically via `uv sync` on container creation.
-
-The container includes:
-- Python 3.12
-- `uv` (pre-installed via the Astral feature)
-- VS Code extensions: Ruff, Python
 
 ---
 
@@ -191,16 +181,6 @@ The gradients are derived in full and cross-referenced to the code in `model.py`
 
 ---
 
-## Experimental Notes
-
-See **[`docs/experimental_notes.md`](docs/experimental_notes.md)** for observations on:
-- Effect of embedding dimension, negative samples, and window size
-- Training loss behaviour
-- What this implementation captures vs. modern Transformer-based LMs
-- Connection between word2vec and modern representation learning
-
----
-
 ## Tests
 
 ```bash
@@ -221,42 +201,9 @@ The **gradient check** is the most important correctness test — it verifies th
 
 ---
 
-## Lint
-
-```bash
-make lint
-```
-
----
-
-## Limitations and Possible Extensions
-
-**Current limitations:**
-- Single-threaded, pure-Python training loop (intentional for clarity)
-- No mini-batch SGD (processes one pair at a time)
-- No subword tokenisation
-- Static embeddings (no contextualisation)
-- Designed for small corpora (not optimised for million-word scale)
-
-**Possible extensions:**
-- Mini-batch updates with vectorised operations
-- CBOW architecture alongside skip-gram
-- Hierarchical softmax as an alternative to negative sampling
-- GloVe-style co-occurrence matrix factorisation for comparison
-- t-SNE visualisation of the learned embedding space
-- Quantitative analogy evaluation (e.g., on the Google analogy dataset)
-
----
-
 ## Reproducibility
 
 - All random operations use a configurable seed (`--seed`, default 42)
 - The bundled corpus is included in the repository
 - Training hyperparameters are printed at the start of each run
 - The project is fully deterministic given the same seed and corpus
-
----
-
-## License
-
-MIT
