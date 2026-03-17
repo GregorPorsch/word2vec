@@ -14,10 +14,10 @@ This document provides a complete mathematical derivation of the skip-gram model
 | $\mathbf{W}_{\text{out}}$ | Output (context-word) embedding matrix | $V \times D$ | `model.W_out` |
 | $\mathbf{v}_w$ | Input embedding of center word $w$ | $D$ | `model.W_in[center_id]` |
 | $\mathbf{u}_c$ | Output embedding of context word $c$ | $D$ | `model.W_out[context_id]` |
-| $\mathbf{u}_k$ | Output embedding of negative sample $k$ | $D$ | `model.W_out[neg_ids[k]]` |
+| $\mathbf{u}_{k_i}$ | Output embedding of negative sample $k_i$ | $D$ | `model.W_out[neg_ids[k_i]]` |
 | $K$ | Number of negative samples | scalar | `config.num_negatives` |
 | $T$ | Total number of words in the corpus | scalar | `sum(len(s) for s in sentences)` |
-| $\theta$ | All trainable parameters, i.e. $\theta = (\mathbf{W}_{\mathrm{in}}, \mathbf{W}_{\mathrm{out}})$ | — | `model.W_in`, `model.W_out` |
+| $\theta$ | All trainable parameters, i.e. $\theta = (W_{in}, W_{out})$ | — | `model.W_in`, `model.W_out` |
 | $\eta$ | Learning rate | scalar | `lr` in `train_step` |
 | $\sigma(\cdot)$ | Sigmoid function | — | `losses.sigmoid()` |
 
@@ -27,10 +27,7 @@ This document provides a complete mathematical derivation of the skip-gram model
 
 ### 2.1. Core Idea
 
-Given a corpus of words $w_1, w_2, \ldots, w_T$, skip-gram maximises the probability of observing actual context words given a center word. The model parameters 
-$$
-\theta = (\mathbf{W}_{in}, \mathbf{W}_{out})
-$$ 
+Given a corpus of words $w_1, w_2, \ldots, w_T$, skip-gram maximises the probability of observing actual context words given a center word. The model parameters $\theta = (W_{in}, W_{out})$ 
 comprise both embedding matrices - these are the only trainable parameters. For each center word $w_t$ and context word $w_c$ within a window of size $m$:
 
 $$
@@ -183,17 +180,10 @@ $
 **Combined:**
 
 $$
-\boxed{\frac{\partial \mathcal{L}}{\partial \mathbf{v}_w} = -(1 - \sigma_c) \, \mathbf{u}_c + \sum_{i=1}^{K} \sigma_{k_i} \, \mathbf{u}_{k_i}}
+\boxed{\frac{\partial \mathcal{L}}{\partial \mathbf{v}_w} = -(1 - \sigma_c) \ \mathbf{u}_c + \sum_{i=1}^{K} \sigma_{k_i} \ \mathbf{u}_{k_i}}
 $$
 
-where
-$$
-\sigma_c = \sigma(\mathbf{u}_c^\top \mathbf{v}_w)
-$$
-and
-$$
-\sigma_{k_i} = \sigma(\mathbf{u}_{k_i}^\top \mathbf{v}_w).
-$$
+where $\sigma_c = \sigma(\mathbf{u}_c^\top \mathbf{v}_w)$ and $\sigma_{k_i} = \sigma(\mathbf{u}_{k_i}^\top \mathbf{v}_w)$.
 
 **Code:**
 ```python
@@ -212,7 +202,7 @@ $$
 Let $z = \mathbf{u}_c^\top \mathbf{v}_w$. By the chain rule, $\frac{\partial}{\partial \mathbf{u}_c}[-\log \sigma(z)] = \frac{d}{dz}[-\log \sigma(z)] \cdot \frac{\partial z}{\partial \mathbf{u}_c}$. We have $\frac{\partial z}{\partial \mathbf{u}_c} = \mathbf{v}_w$ and $\frac{d}{dz}[-\log \sigma(z)] = -(1 - \sigma(z))$ (section 4.1).
 
 $$
-\boxed{\frac{\partial \mathcal{L}}{\partial \mathbf{u}_c} = -(1 - \sigma_c) \, \mathbf{v}_w}
+\boxed{\frac{\partial \mathcal{L}}{\partial \mathbf{u}_c} = -(1 - \sigma_c) \ \mathbf{v}_w}
 $$
 
 **Code:**
@@ -230,25 +220,13 @@ $$
 
 Let $z_i = \mathbf{u}_{k_i}^\top \mathbf{v}_w$.
 
-By the chain rule,
-$$
-\frac{\partial}{\partial \mathbf{u}_{k_i}} \left[-\log \sigma(-z_i)\right]
-= \frac{d}{dz_i} \left[-\log \sigma(-z_i)\right] \cdot \frac{\partial z_i}{\partial \mathbf{u}_{k_i}}.
-$$
-
-We have
-$$
-\frac{\partial z_i}{\partial \mathbf{u}_{k_i}} = \mathbf{v}_w
-$$
-and
-$$
-\frac{d}{dz_i} \left[-\log \sigma(-z_i)\right] = \sigma(z_i).
-$$
+By the chain rule, $\frac{\partial}{\partial \mathbf{u}_{k_i}} \left[-\log \sigma(-z_i)\right]
+= \frac{d}{dz_i} \left[-\log \sigma(-z_i)\right] \cdot \frac{\partial z_i}{\partial \mathbf{u}_{k_i}}$. We have $\frac{\partial z_i}{\partial \mathbf{u}_{k_i}} = \mathbf{v}_w$ and $\frac{d}{dz_i} \left[-\log \sigma(-z_i)\right] = \sigma(z_i)$.
 
 (Section~4.1)
 
 $$
-\boxed{\frac{\partial \mathcal{L}}{\partial \mathbf{u}_{k_i}} = \sigma_{k_i} \, \mathbf{v}_w}
+\boxed{\frac{\partial \mathcal{L}}{\partial \mathbf{u}_{k_i}} = \sigma_{k_i} \ \mathbf{v}_w}
 $$
 
 **Code:**
@@ -263,16 +241,16 @@ grad_u_neg = sigma_neg[:, np.newaxis] * v_w[np.newaxis, :]  # (K, D)
 Each parameter is updated using stochastic gradient descent:
 
 $$
-\theta \leftarrow \theta - \eta \, \frac{\partial \mathcal{L}}{\partial \theta}
+\theta \leftarrow \theta - \eta \ \frac{\partial \mathcal{L}}{\partial \theta}
 $$
 
 Concretely for each training pair $(w, c)$ with negatives $\{k_1, \ldots, k_K\}$:
 
 | Parameter | Update rule | Dimension |
 |-----------|------------|-----------|
-| $\mathbf{v}_w$ | $\mathbf{v}_w \leftarrow \mathbf{v}_w - \eta \, \frac{\partial \mathcal{L}}{\partial \mathbf{v}_w}$ | $(D,)$ |
-| $\mathbf{u}_c$ | $\mathbf{u}_c \leftarrow \mathbf{u}_c - \eta \, \frac{\partial \mathcal{L}}{\partial \mathbf{u}_c}$ | $(D,)$ |
-| $\mathbf{u}_{k_i}$ | $\mathbf{u}_{k_i} \leftarrow \mathbf{u}_{k_i} - \eta \, \frac{\partial \mathcal{L}}{\partial \mathbf{u}_{k_i}}$ | $(D,)$ for each $i$ |
+| $\mathbf{v}_w$ | $\mathbf{v}_w \leftarrow \mathbf{v}_w - \eta \ \frac{\partial \mathcal{L}}{\partial \mathbf{v}_w}$ | $(D,)$ |
+| $\mathbf{u}_c$ | $\mathbf{u}_c \leftarrow \mathbf{u}_c - \eta \ \frac{\partial \mathcal{L}}{\partial \mathbf{u}_c}$ | $(D,)$ |
+| $\mathbf{u}_{k_i}$ | $\mathbf{u}_{k_i} \leftarrow \mathbf{u}_{k_i} - \eta \ \frac{\partial \mathcal{L}}{\partial \mathbf{u}_{k_i}}$ | $(D,)$ for each $i$ |
 
 **Code:**
 ```python

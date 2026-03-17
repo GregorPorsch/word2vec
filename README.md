@@ -66,7 +66,7 @@ The repository includes a [dev container](.devcontainer/devcontainer.json) confi
 
 The container includes:
 - Python 3.12
-- `uv` (pre-installed via the Astral feature)
+- `uv` (pre-installed)
 - VS Code extensions: Ruff, Python
 
 ### Local Setup
