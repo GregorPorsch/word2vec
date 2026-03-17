@@ -331,7 +331,7 @@ where $m$ is the maximum window size. This effectively gives higher weight to ne
 Both embedding matrices are initialised with Xavier uniform:
 
 $$
-W_{ij} \sim \text{Uniform}\left(-\sqrt{\frac{6}{V + D}}, \; +\sqrt{\frac{6}{V + D}}\right)
+W_{ij} \sim \text{Uniform}\left(-\sqrt{\frac{6}{V + D}}, \ +\sqrt{\frac{6}{V + D}}\right)
 $$
 
 This keeps the variance of the initial forward-pass activations in a reasonable range, preventing gradients from vanishing or exploding in the first few updates.
@@ -351,7 +351,7 @@ $$
 with $\varepsilon = 10^{-5}$. The relative error between analytic and numerical gradients is:
 
 $$
-\mathrm{rel\_error}_j = \frac{|g_{\mathrm{analytic},j} - g_{\mathrm{numerical},j}|}{\max(|g_{\mathrm{analytic},j}|, \; |g_{\mathrm{numerical},j}|) + 10^{-12}}
+\mathrm{rel\_error}_j = \frac{|g_{\mathrm{analytic},j} - g_{\mathrm{numerical},j}|}{\max(|g_{\mathrm{analytic},j}|, \ |g_{\mathrm{numerical},j}|) + 10^{-12}}
 $$
 
 We assert $\mathrm{rel\_error}_j < 10^{-4}$ for all $j$, which is checked for:
