@@ -159,7 +159,9 @@ class SkipGramModel:
         # SGD update: θ ← θ − η · ∂L/∂θ
         self.W_in[center_id] -= lr * grad_v_w
         self.W_out[context_id] -= lr * grad_u_c
-        self.W_out[neg_ids] -= lr * grad_u_neg
+        # Use indexed accumulation so duplicated negative IDs receive the
+        # sum of all contributions in this step.
+        np.add.at(self.W_out, neg_ids, -lr * grad_u_neg)
 
         return loss
 

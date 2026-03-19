@@ -63,15 +63,15 @@ Instead of predicting context words via the full softmax (section 2.1), negative
 We model the probability that a pair $(w, j)$ is a real context pair as:
 
 $$
-P(D = 1 \mid w, j) = \sigma(\mathbf{u}_j^\top \mathbf{v}_w)
+P(Y =1 \mid w, j) = \sigma(\mathbf{u}_j^\top \mathbf{v}_w)
 $$
 
-where $\sigma(x) = \frac{1}{1 + e^{-x}}$ is the sigmoid function. Conversely, the probability that the pair is noise is $P(D = 0 \mid w, j) = 1 - \sigma(\mathbf{u}_j^\top \mathbf{v}_w) = \sigma(-\mathbf{u}_j^\top \mathbf{v}_w)$.
+where $\sigma(x) = \frac{1}{1 + e^{-x}}$ is the sigmoid function. Conversely, the probability that the pair is noise is $P(Y =0 \mid w, j) = 1 - \sigma(\mathbf{u}_j^\top \mathbf{v}_w) = \sigma(-\mathbf{u}_j^\top \mathbf{v}_w)$.
 
-For a positive pair $(w, c)$ with label $D = 1$ and $K$ negative samples $\{k_1, \ldots, k_K\}$ each with label $D = 0$, the joint log-likelihood is:
+For a positive pair $(w, c)$ with label $Y =1$ and $K$ negative samples $\{k_1, \ldots, k_K\}$ each with label $Y =0$, the joint log-likelihood is:
 
 $$
-\ell = \log P(D=1 \mid w, c) + \sum_{i=1}^{K} \log P(D=0 \mid w, k_i)
+\ell = \log P(Y=1 \mid w, c) + \sum_{i=1}^{K} \log P(Y=0 \mid w, k_i)
 $$
 
 $$
@@ -256,7 +256,7 @@ Concretely for each training pair $(w, c)$ with negatives $\{k_1, \ldots, k_K\}$
 ```python
 self.W_in[center_id]   -= lr * grad_v_w
 self.W_out[context_id] -= lr * grad_u_c
-self.W_out[neg_ids]    -= lr * grad_u_neg
+np.add.at(self.W_out, neg_ids, -lr * grad_u_neg)
 ```
 
 ### 5.1. Learning Rate Schedule
